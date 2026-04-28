@@ -14,14 +14,22 @@ jobs:
 
       - name: Create clean build folder
         run: |
-          mkdir ot-watchdog
+          mkdir build
 
           rsync -av \
             --exclude='.git' \
             --exclude='.github' \
             --exclude='tests' \
-            ./ ot-watchdog/
-
+            --exclude='build'
+            ./ build/ot-watchdog/
+            
+      - name: Fix double nesting (IMPORTANT)
+        run: |
+          if [ -d "build/ot-watchdog/ot-watchdog" ]; then
+            mv build/ot-watchdog/ot-watchdog/* build/ot-watchdog/
+            rm -rf build/ot-watchdog/ot-watchdog
+          fi
+          
       - name: Create ZIP
         run: |
           zip -r ot-watchdog.zip ot-watchdog
@@ -39,3 +47,9 @@ jobs:
 
           echo "=== DIRECTORY STRUCTURE ==="
           ls -R ot-watchdog || true
+
+      - name: Verify final structure
+        run: |
+          echo "FINAL TREE:"
+          sudo apt-get update && sudo apt-get install -y tree
+          tree build/ot-watchdog
