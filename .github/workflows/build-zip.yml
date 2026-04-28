@@ -1,4 +1,4 @@
-name: Build & Release OT Watchdog
+name: Build OT Watchdog ZIP
 
 on:
   push:
@@ -12,35 +12,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Get version from plugin file
-        id: version
-        run: |
-          VERSION=$(grep "Version:" ot-watchdog.php | head -n1 | awk '{print $2}')
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
-
-      - name: Prepare build folder
+      - name: Create clean build folder
         run: |
           mkdir build
+
           rsync -av \
             --exclude='.git' \
             --exclude='.github' \
             --exclude='tests' \
-            ./ build/
+            ./ build/ot-watchdog/
 
       - name: Create ZIP
         run: |
           cd build
-          zip -r ot-watchdog.zip .
+          zip -r ot-watchdog.zip ot-watchdog
 
-      - name: Rename ZIP with version
-        run: |
-          mv build/ot-watchdog.zip build/ot-watchdog-${{ env.VERSION }}.zip
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+      - name: Upload ZIP artifact
+        uses: actions/upload-artifact@v4
         with:
-          tag_name: v${{ env.VERSION }}
-          name: OT Watchdog v${{ env.VERSION }}
-          files: build/ot-watchdog-${{ env.VERSION }}.zip
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: ot-watchdog-plugin
+          path: build/ot-watchdog.zip
