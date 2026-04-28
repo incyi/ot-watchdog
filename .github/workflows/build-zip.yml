@@ -12,46 +12,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # =========================
-      # GET VERSION FROM PLUGIN FILE
-      # =========================
       - name: Extract version
         id: version
         run: |
           VERSION=$(grep -m1 "Version:" ot-watchdog.php | sed 's/.*Version: *//')
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
-      # =========================
-      # CREATE CLEAN WORDPRESS ZIP
-      # =========================
-      - name: Create plugin ZIP (git archive)
+      - name: Prepare plugin folder
         run: |
-          git archive --format=zip --prefix=ot-watchdog/ HEAD \
-            --output ot-watchdog-v${{ env.VERSION }}.zip \
-            -- . ":(exclude).github"
+          mkdir -p dist/ot-watchdog
+          git archive HEAD -- . ":(exclude).github" | tar -x -C dist/ot-watchdog
 
-      # =========================
-      # DEBUG: CHECK ZIP CONTENTS
-      # =========================
-      - name: Inspect ZIP contents
-        run: |
-          echo "=== ZIP CONTENTS ==="
-          unzip -l ot-watchdog-v${{ env.VERSION }}.zip
-
-      # =========================
-      # VERIFY REPO STRUCTURE
-      # =========================
-      - name: Verify repo structure
-        run: |
-          echo "=== REPO STRUCTURE ==="
-          ls -R
-
-      # =========================
-      # UPLOAD ARTIFACT
-      # =========================
       - name: Upload ZIP artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ot-watchdog-plugin
-          path: ot-watchdog-v${{ env.VERSION }}.zip
-          compression-level: 0
+          name: ot-watchdog-v${{ env.VERSION }}
+          path: dist/
+          compression-level: 9
