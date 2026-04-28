@@ -1,0 +1,29 @@
+name: Build WordPress Plugin ZIP
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create plugin folder
+        run: |
+          mkdir ot-watchdog-build
+          rsync -av --exclude='.git' --exclude='.github' --exclude='tests' ./ ot-watchdog-build/ot-watchdog/
+
+      - name: Create ZIP
+        run: |
+          cd ot-watchdog-build
+          zip -r ot-watchdog.zip ot-watchdog
+
+      - name: Upload ZIP artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ot-watchdog-plugin
+          path: ot-watchdog-build/ot-watchdog.zip
