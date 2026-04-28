@@ -107,7 +107,7 @@ add_action('admin_menu', function () {
         'manage_options',
         'ot-watchdog',
         'ot_watchdog_admin_page',
-        'dashicons-visibility',
+        'dashicons-dashboard',
         80
     );
 });
