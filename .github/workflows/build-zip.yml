@@ -14,21 +14,28 @@ jobs:
 
       - name: Create clean build folder
         run: |
-          mkdir build
+          mkdir ot-watchdog
 
           rsync -av \
             --exclude='.git' \
             --exclude='.github' \
             --exclude='tests' \
-            ./ build/ot-watchdog/
+            ./ ot-watchdog/
 
       - name: Create ZIP
         run: |
-          cd build
           zip -r ot-watchdog.zip ot-watchdog
 
       - name: Upload ZIP artifact
         uses: actions/upload-artifact@v4
         with:
           name: ot-watchdog-plugin
-          path: build/ot-watchdog.zip
+          path: ot-watchdog.zip
+
+      - name: Inspect ZIP contents (debug)
+        run: |
+          echo "=== ZIP CONTENTS ==="
+          unzip -l ot-watchdog.zip
+
+          echo "=== DIRECTORY STRUCTURE ==="
+          ls -R ot-watchdog || true
