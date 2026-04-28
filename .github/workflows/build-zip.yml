@@ -54,3 +54,4 @@ jobs:
         with:
           name: ot-watchdog-plugin
           path: ot-watchdog-v${{ env.VERSION }}.zip
+          compression-level: 0
