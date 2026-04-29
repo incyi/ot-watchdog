@@ -13,6 +13,7 @@ defined('ABSPATH') or die('No script kiddies please!');
  * =========================
  */
 define('OT_WATCHDOG_VERSION', '0.0.1');
+define('OT_OPTION_KEY', 'ot_watchdog_status');
 
 /**
  * =========================
@@ -22,6 +23,7 @@ define('OT_WATCHDOG_VERSION', '0.0.1');
 require_once plugin_dir_path(__FILE__) . 'includes/core.php';
 require_once plugin_dir_path(__FILE__) . 'includes/api.php';
 require_once plugin_dir_path(__FILE__) . 'includes/admin.php';
+require_once plugin_dir_path(__FILE__) . 'includes/updater.php';
 
 /**
  * =========================
@@ -31,6 +33,7 @@ require_once plugin_dir_path(__FILE__) . 'includes/admin.php';
 add_action('plugins_loaded', function () {
     new OTWatchdog\Api();
     new OTWatchdog\Admin();
+    new OTWatchdog\Updater();
 });
 
 /**
