@@ -1,11 +1,11 @@
-name: Build OT Watchdog ZIP
+name: Build OT Watchdog ZIP & Create Release
 
 on:
   push:
     branches: [ "main" ]
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -14,21 +14,65 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract version
+      - name: Get last tag
+        id: last_tag
+        run: |
+          TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          echo "TAG=$TAG" >> $GITHUB_OUTPUT
+
+      - name: Increment version
         id: version
         run: |
-          VERSION=$(grep -m1 "Version:" ot-watchdog.php | sed 's/.*Version: *//')
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          TAG=${{ steps.last_tag.outputs.TAG }}
+          VERSION=${TAG#v}
+          MAJOR=$(echo $VERSION | cut -d. -f1)
+          MINOR=$(echo $VERSION | cut -d. -f2)
+          PATCH=$(echo $VERSION | cut -d. -f3)
+          NEW_PATCH=$((PATCH + 1))
+          NEW_VERSION="$MAJOR.$MINOR.$NEW_PATCH"
+          NEW_TAG="v$NEW_VERSION"
+          echo "VERSION=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "TAG=$NEW_TAG" >> $GITHUB_OUTPUT
+
+      - name: Update version files
+        run: |
+          NEW_VERSION=${{ steps.version.outputs.VERSION }}
+          
+          # Update ot-watchdog.php - Version in header
+          sed -i "s/ \* Version: .*/ * Version: $NEW_VERSION/" ot-watchdog.php
+          
+          # Update ot-watchdog.php - Version constant
+          sed -i "s/define('OT_WATCHDOG_VERSION', .*/define('OT_WATCHDOG_VERSION', '$NEW_VERSION');/" ot-watchdog.php
+          
+          # Update composer.json
+          sed -i "s/\"version\": .*/\"version\": \"$NEW_VERSION\",/" composer.json
 
       - name: Prepare plugin folder
         run: |
           mkdir -p dist/ot-watchdog
           git archive HEAD -- . ":(exclude).github" | tar -x -C dist/ot-watchdog
 
-      - name: Upload ZIP artifact
-        uses: actions/upload-artifact@v4
+      - name: Commit version update
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add ot-watchdog.php composer.json
+          git commit -m "chore: bump version to ${{ steps.version.outputs.VERSION }}" || echo "No changes to commit"
+
+      - name: Create tag
+        run: |
+          git tag ${{ steps.version.outputs.TAG }}
+          git push origin main || echo "No new commits to push"
+          git push origin ${{ steps.version.outputs.TAG }}
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
         with:
-          name: ot-watchdog-v${{ env.VERSION }}
-          path: dist/
-          compression-level: 9
+          tag_name: ${{ steps.version.outputs.TAG }}
+          files: dist/
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
