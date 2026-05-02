@@ -1,11 +1,12 @@
 name: Build OT Watchdog ZIP & Create Release
 
+
+name: Build & Release
+
 on:
   push:
-    branches: [ "main" ]
-
-permissions:
-  contents: write
+    branches:
+      - main
 
 jobs:
   build:
@@ -15,8 +16,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0   # IMPORTANT: fetch full history + tags
           token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0   # গুরুত্বপূর্ণ: tags needed for versioning
 
       - name: Get last tag
         id: last_tag
@@ -32,35 +33,53 @@ jobs:
           MAJOR=$(echo $VERSION | cut -d. -f1)
           MINOR=$(echo $VERSION | cut -d. -f2)
           PATCH=$(echo $VERSION | cut -d. -f3)
+
           NEW_PATCH=$((PATCH + 1))
           NEW_VERSION="$MAJOR.$MINOR.$NEW_PATCH"
           NEW_TAG="v$NEW_VERSION"
+
           echo "VERSION=$NEW_VERSION" >> $GITHUB_OUTPUT
           echo "TAG=$NEW_TAG" >> $GITHUB_OUTPUT
 
       - name: Update version files
         run: |
           NEW_VERSION=${{ steps.version.outputs.VERSION }}
-          
+          NEW_TAG=${{ steps.version.outputs.TAG }}
+          NOW=$(date '+%Y-%m-%d %H:%M:%S')
+
           # Update ot-watchdog.php - Version in header
           sed -i "s/ \* Version: .*/ * Version: $NEW_VERSION/" ot-watchdog.php
-          
+
           # Update ot-watchdog.php - Version constant
           sed -i "s/define('OT_WATCHDOG_VERSION', .*/define('OT_WATCHDOG_VERSION', '$NEW_VERSION');/" ot-watchdog.php
-          
+
           # Update composer.json
           sed -i "s/\"version\": .*/\"version\": \"$NEW_VERSION\",/" composer.json
+
+          # Update updates.json
+          sed -i "s/\"version\": .*/\"version\": \"$NEW_VERSION\",/" updates.json
+
+          sed -i "s|\"download_url\": .*|\"download_url\": \"https://github.com/incyi/ot-watchdog/releases/download/$NEW_TAG/ot-watchdog-$NEW_VERSION.zip\",|" updates.json
+
+          sed -i "s|\"changelog\": .*|\"changelog\": \"https://github.com/incyi/ot-watchdog/releases/tag/$NEW_TAG\"|" updates.json
+
+          sed -i "s/\"last_updated\": .*/\"last_updated\": \"$NOW\",/" updates.json
 
       - name: Prepare plugin folder
         run: |
           mkdir -p dist/ot-watchdog
           git archive HEAD -- . ":(exclude).github" | tar -x -C dist/ot-watchdog
 
+      - name: Create zip
+        run: |
+          cd dist
+          zip -r ot-watchdog-${{ steps.version.outputs.VERSION }}.zip ot-watchdog
+
       - name: Commit version update
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add ot-watchdog.php composer.json
+          git add ot-watchdog.php composer.json updates.json
           git commit -m "chore: bump version to ${{ steps.version.outputs.VERSION }}" || echo "No changes to commit"
 
       - name: Create tag
@@ -73,7 +92,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.version.outputs.TAG }}
-          files: dist/
+          files: dist/ot-watchdog-${{ steps.version.outputs.VERSION }}.zip
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
