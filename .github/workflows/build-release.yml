@@ -1,8 +1,5 @@
 name: Build OT Watchdog ZIP & Create Release
 
-
-name: Build & Release
-
 on:
   push:
     branches:
