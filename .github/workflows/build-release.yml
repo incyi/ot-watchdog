@@ -15,6 +15,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          fetch-depth: 0   # IMPORTANT: fetch full history + tags
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Get last tag
