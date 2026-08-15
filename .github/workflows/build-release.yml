@@ -71,6 +71,11 @@ jobs:
 
           sed -i "s/\"last_updated\": .*/\"last_updated\": \"$NOW\",/" updates.json
 
+          # Update docs/update-info.json
+          sed -i "s/\"version\": .*/\"version\": \"$NEW_VERSION\",/" docs/update-info.json
+
+          sed -i "s|\"download_url\": .*|\"download_url\": \"https://github.com/incyi/ot-watchdog/releases/download/$NEW_TAG/ot-watchdog-$NEW_VERSION.zip\"|" docs/update-info.json
+
       - name: Prepare plugin folder
         run: |
           mkdir -p dist/ot-watchdog
@@ -85,7 +90,7 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add ot-watchdog.php composer.json updates.json
+          git add ot-watchdog.php composer.json updates.json docs/update-info.json
           git commit -m "chore: bump version to ${{ steps.version.outputs.VERSION }}" || echo "No changes to commit"
 
       - name: Create and push tag

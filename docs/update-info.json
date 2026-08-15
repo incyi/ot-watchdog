@@ -1,6 +1,6 @@
 {
-  "version": "0.0.4",
-  "download_url": "https://github.com/incyi/ot-watchdog/releases/download/v0.0.4/ot-watchdog-0.0.4.zip",
+  "version": "0.0.5",
+  "download_url": "https://github.com/incyi/ot-watchdog/releases/download/v0.0.5/ot-watchdog-0.0.5.zip",
   "tested": "6.5",
   "requires": "6.0",
   "requires_php": "7.4"
