@@ -2,7 +2,6 @@
 /**
  * Plugin Name: OT Watchdog
  * Description: Lightweight OT status monitoring plugin (PLC, HMI, Switch, Modem)
- * Version: 0.0.2
  */
 
 defined('ABSPATH') or die('No script kiddies please!');
@@ -12,7 +11,7 @@ defined('ABSPATH') or die('No script kiddies please!');
  * CONFIG
  * =========================
  */
-define('OT_WATCHDOG_VERSION', '0.0.2');
+define('OT_WATCHDOG_VERSION', '0.0.4');
 define('OT_OPTION_KEY', 'ot_watchdog_status');
 
 /**
