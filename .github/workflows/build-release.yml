@@ -72,10 +72,10 @@ jobs:
 
           sed -i "s/\"last_updated\": .*/\"last_updated\": \"$NOW\",/" updates.json
 
-          # Update docs/update-info.json
+          # Update docs/update-info.json with proper JSON formatting
           sed -i "s/\"version\": .*/\"version\": \"$NEW_VERSION\",/" docs/update-info.json
 
-          sed -i "s|\"download_url\": .*|\"download_url\": \"https://github.com/incyi/ot-watchdog/releases/download/$NEW_TAG/ot-watchdog-$NEW_VERSION.zip\"|" docs/update-info.json
+          sed -i "s|\"download_url\": .*|\"download_url\": \"https://github.com/incyi/ot-watchdog/releases/download/$NEW_TAG/ot-watchdog-$NEW_VERSION.zip\",|" docs/update-info.json
 
       - name: Prepare plugin folder
         run: |
