@@ -96,11 +96,9 @@ jobs:
       - name: Create and push tag
         run: |
           NEW_TAG=${{ steps.version.outputs.TAG }}
-          # Force fetch to ensure we have the latest tag info
-          git fetch origin "$NEW_TAG" >/dev/null 2>&1 || true
           
-          # Check if tag exists on remote
-          if git rev-parse "origin/$NEW_TAG" >/dev/null 2>&1; then
+          # Check if tag exists on remote using git ls-remote
+          if git ls-remote origin "refs/tags/$NEW_TAG" | grep -q "$NEW_TAG"; then
             echo "Tag $NEW_TAG already exists on remote. Skipping tag creation."
             exit 0
           fi
