@@ -1,7 +1,11 @@
 <?php
 /**
  * Plugin Name: OT Watchdog
+ * Plugin URI: https://github.com/incyi/ot-watchdog
  * Description: Lightweight OT status monitoring plugin (PLC, HMI, Switch, Modem)
+ * Version: 0.0.5
+ * Author: İnanç Yiğit
+ * Author URI: https://github.com/incyi
  */
 
 defined('ABSPATH') or die('No script kiddies please!');
@@ -11,7 +15,7 @@ defined('ABSPATH') or die('No script kiddies please!');
  * CONFIG
  * =========================
  */
-define('OT_WATCHDOG_VERSION', '0.0.6');
+define('OT_WATCHDOG_VERSION', '0.0.5');
 define('OT_OPTION_KEY', 'ot_watchdog_status');
 
 /**
