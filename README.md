@@ -9,4 +9,4 @@ Lightweight OT status monitoring plugin for WordPress
 
 [Plugin update info](https://incyi.github.io/ot-watchdog/docs/update-info.json)
 
-Force update
+Make all changes in Main, later when 1.0.0 is released I will make a develop branch. 
