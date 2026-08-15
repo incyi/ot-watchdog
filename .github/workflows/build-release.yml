@@ -19,11 +19,16 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0   # গুরুত্বপূর্ণ: tags needed for versioning
 
+      - name: Fetch all tags from remote
+        run: |
+          git fetch origin --tags --force
+
       - name: Get last tag
         id: last_tag
         run: |
           TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
           echo "TAG=$TAG" >> $GITHUB_OUTPUT
+          echo "Found last tag: $TAG"
 
       - name: Increment version
         id: version
@@ -40,6 +45,7 @@ jobs:
 
           echo "VERSION=$NEW_VERSION" >> $GITHUB_OUTPUT
           echo "TAG=$NEW_TAG" >> $GITHUB_OUTPUT
+          echo "New version: $NEW_VERSION, New tag: $NEW_TAG"
 
       - name: Update version files
         run: |
@@ -82,11 +88,22 @@ jobs:
           git add ot-watchdog.php composer.json updates.json
           git commit -m "chore: bump version to ${{ steps.version.outputs.VERSION }}" || echo "No changes to commit"
 
-      - name: Create tag
+      - name: Create and push tag
         run: |
-          git tag ${{ steps.version.outputs.TAG }}
+          NEW_TAG=${{ steps.version.outputs.TAG }}
+          # Force fetch to ensure we have the latest tag info
+          git fetch origin "$NEW_TAG" >/dev/null 2>&1 || true
+          
+          # Check if tag exists on remote
+          if git rev-parse "origin/$NEW_TAG" >/dev/null 2>&1; then
+            echo "Tag $NEW_TAG already exists on remote. Skipping tag creation."
+            exit 0
+          fi
+          
+          # Tag doesn't exist, create and push it
+          git tag "$NEW_TAG"
           git push origin main || echo "No new commits to push"
-          git push origin ${{ steps.version.outputs.TAG }}
+          git push origin "$NEW_TAG"
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
