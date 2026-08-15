@@ -9,7 +9,7 @@ if (!defined('ABSPATH')) {
 class Updater
 {
     const UPDATE_CHECK_INTERVAL = 86400; // 24 uur
-    const REMOTE_UPDATES_URL = 'https://incyi.github.io/ot-watchdog/updates.json';
+    const REMOTE_UPDATES_URL = 'https://incyi.github.io/ot-watchdog/updates-info.json';
 
     public function __construct()
     {
