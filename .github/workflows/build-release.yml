@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          fetch-depth: 0   # গুরুত্বপূর্ণ: tags needed for versioning
+          fetch-depth: 0
 
       - name: Fetch all tags from remote
         run: |
@@ -77,6 +77,18 @@ jobs:
 
           sed -i "s|\"download_url\": .*|\"download_url\": \"https://github.com/incyi/ot-watchdog/releases/download/$NEW_TAG/ot-watchdog-$NEW_VERSION.zip\",|" docs/update-info.json
 
+          sed -i "s|\"changelog\": .*|\"changelog\": \"https://github.com/incyi/ot-watchdog/releases/tag/$NEW_TAG\"|" docs/update-info.json
+
+          sed -i "s/\"last_updated\": .*/\"last_updated\": \"$NOW\",/" docs/update-info.json
+
+      - name: Commit version update
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add ot-watchdog.php composer.json updates.json docs/update-info.json
+          git commit -m "chore: bump version to ${{ steps.version.outputs.VERSION }}" || echo "No changes to commit"
+          git push origin main || echo "No new commits to push"
+
       - name: Prepare plugin folder
         run: |
           mkdir -p dist/ot-watchdog
@@ -86,13 +98,6 @@ jobs:
         run: |
           cd dist
           zip -r ot-watchdog-${{ steps.version.outputs.VERSION }}.zip ot-watchdog
-
-      - name: Commit version update
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add ot-watchdog.php composer.json updates.json docs/update-info.json
-          git commit -m "chore: bump version to ${{ steps.version.outputs.VERSION }}" || echo "No changes to commit"
 
       - name: Create and push tag
         run: |
@@ -106,7 +111,6 @@ jobs:
           
           # Tag doesn't exist, create and push it
           git tag "$NEW_TAG"
-          git push origin main || echo "No new commits to push"
           git push origin "$NEW_TAG"
 
       - name: Create Release
