@@ -11,7 +11,7 @@ defined('ABSPATH') or die('No script kiddies please!');
  * CONFIG
  * =========================
  */
-define('OT_WATCHDOG_VERSION', '0.0.4');
+define('OT_WATCHDOG_VERSION', '0.0.5');
 define('OT_OPTION_KEY', 'ot_watchdog_status');
 
 /**
