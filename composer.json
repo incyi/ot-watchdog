@@ -3,7 +3,7 @@
   "description": "Lightweight OT status monitoring plugin for WordPress (PLC, HMI, Switch, Modem)",
   "type": "wordpress-plugin",
   "license": "GPL-2.0-or-later",
-  "version": "0.0.17",
+  "version": "0.0.18",
 
   "require": {
     "php": ">=8.0"
