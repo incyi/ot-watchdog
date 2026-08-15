@@ -1,10 +1,10 @@
 {
   "name": "OT Watchdog",
   "slug": "ot-watchdog",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "author": "İnanç Yiğit",
   "author_profile": "https://github.com/incyi",
-  "download_url": "https://github.com/incyi/ot-watchdog/releases/download/v0.0.13/ot-watchdog-0.0.13.zip",
+  "download_url": "https://github.com/incyi/ot-watchdog/releases/download/v0.0.14/ot-watchdog-0.0.14.zip",
   "tested_up_to": "6.5",
   "requires_php": "7.4",
   "requires_at_least": "6.0",
