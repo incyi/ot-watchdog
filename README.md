@@ -8,3 +8,5 @@ Lightweight OT status monitoring plugin for WordPress
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=incyi_ot-watchdog&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=incyi_ot-watchdog)
 
 [Plugin update info](https://incyi.github.io/ot-watchdog/docs/update-info.json)
+
+Force update
